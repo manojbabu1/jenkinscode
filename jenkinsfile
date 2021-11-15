@@ -1,0 +1,20 @@
+node('master') {
+    // some block
+    stage('Continus Delivary') {
+    git 'https://github.com/intelliqittrainings/maven.git'
+}
+    stage('Continus Build') {
+    sh 'mvn package'
+    }
+    stage('continus Deploy') {
+        deploy adapters: [tomcat9(credentialsId: 'fd709428-43d2-4d1c-9ecf-b8b87061317f', path: '', url: 'http://172.31.92.5:8080')], contextPath: 'textpath', war: '**/*.war'
+    }
+    stage('Continus Testing') {
+    git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
+    sh 'java -jar /home/ubuntu/.jenkins/workspace/pipeline_project/testing.jar'
+    }
+    stage('continus delivary') {
+        input message: 'waiting to approval from DM', submitter: 'nagaraju'
+    deploy adapters: [tomcat9(credentialsId: 'fd709428-43d2-4d1c-9ecf-b8b87061317f', path: '', url: 'http://172.31.29.65:8080')], contextPath: 'prodapp', war: '**/*.war'
+    }
+}
